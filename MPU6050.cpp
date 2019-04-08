@@ -18,7 +18,7 @@
 #include <iostream>  // Used for data output
 
 // Used for the I2C interface
-#include <linux/i2c-dev.h>
+#include <linux/i2c-dev.h> // For SMBus commands
 #include <sys/ioctl.h>     // For ioctl()
 #include <fcntl.h>         // For O_RDWR
 #include <unistd.h>        // For open()
