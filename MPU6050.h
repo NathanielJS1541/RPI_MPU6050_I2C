@@ -134,9 +134,11 @@
 class MPU6050{
 public:
 	// ---------- Special class members -----------
-	MPU6050();                            // Default constructor
-	MPU6050(const MPU6050& M);            // Copy constructor
-	~MPU6050();                           // Destructor
+    MPU6050();                                         // Default constructor - used for making arrays of the object
+	MPU6050(bool isPiRev0 = false);                    // Default constructor with compatibility for rev0 Pis
+	MPU6050(int deviceAddress, bool isPiRev0 = false); // Constructor with additional parameters to set the address and if the Pi is rev0
+	MPU6050(const MPU6050& M);                         // Copy constructor
+	~MPU6050();                                        // Destructor
 	// --------------------------------------------
 
 	// ----------- Operator overloading -----------

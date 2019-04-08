@@ -56,16 +56,91 @@ MPU6050::MPU6050(){
     initialise();
 }
 
+// Constructor which can be used if the Pi is rev0
+MPU6050::MPU6050(bool isPiRev0){
+    // If the address for the device is not specified, use the default address.
+    address = MPU_DEFAULT_I2C_ADDR;
+
+    if(isPiRev0){
+        snprintf(fileName, 10, "/dev/i2c-%d", 0); // The I2C interface is 0 on a rev0 Pi
+    }
+    else{
+        snprintf(fileName, 10, "/dev/i2c-%d", 1); // The I2C device is 1 otherwise
+    }
+
+    // Initialise the I2C interface
+    i2cHandle = open(fileName, O_RDWR);
+    if (i2cHandle < 0) {
+        std::cout << std::endl << "Couldn't open the I2C Bus. Please ensure the I2C interface is enabled." << std::endl;
+        exit(I2C_BUS_INIT_ERROR);
+    }
+
+    // Set the slave address for the device
+    if (ioctl(i2cHandle, I2C_SLAVE, address) < 0) {
+        std::cout << std::endl << "The I2C Device couldn't be assigned a slave address." << std::endl;
+        exit(I2C_SET_SLAVE_ADDR_ERR);
+    }
+
+    gyroX = 0;
+    gyroY = 0;
+    gyroZ = 0;
+    accelX = 0;
+    accelY = 0;
+    accelZ = 0;
+    temperature = 0;
+
+    // Set the registers for the MPU
+    initialise();
+}
+
+// Constructor with ability to select a custom address and select if the Pi is rev0
+MPU6050::MPU6050(int deviceAddress, bool isPiRev0){
+    // If the address for the device is not specified, use the default address.
+    address = deviceAddress;
+
+    if(isPiRev0){
+        snprintf(fileName, 10, "/dev/i2c-%d", 0); // The I2C interface is 0 on a rev0 Pi
+    }
+    else{
+        snprintf(fileName, 10, "/dev/i2c-%d", 1); // The I2C device is 1 otherwise
+    }
+
+    // Initialise the I2C interface
+    i2cHandle = open(fileName, O_RDWR);
+    if (i2cHandle < 0) {
+        std::cout << std::endl << "Couldn't open the I2C Bus. Please ensure the I2C interface is enabled." << std::endl;
+        exit(I2C_BUS_INIT_ERROR);
+    }
+
+    // Set the slave address for the device
+    if (ioctl(i2cHandle, I2C_SLAVE, address) < 0) {
+        std::cout << std::endl << "The I2C Device couldn't be assigned a slave address." << std::endl;
+        exit(I2C_SET_SLAVE_ADDR_ERR);
+    }
+
+    gyroX = 0;
+    gyroY = 0;
+    gyroZ = 0;
+    accelX = 0;
+    accelY = 0;
+    accelZ = 0;
+    temperature = 0;
+
+    // Set the registers for the MPU
+    initialise();
+}
+
+// Copy constructor
 MPU6050::MPU6050(const MPU6050& M){
     *this = M; // Make use of the assignment operator
 }
 
+// Destructor - close the I2C handle to end transmissions
 MPU6050::~MPU6050(){
     if(i2cHandle){
         close(i2cHandle);
     }
 }
-
 // --------------------------------------------------------------------------------------------
 
 // ----------------------------------- Operator Overloading -----------------------------------
