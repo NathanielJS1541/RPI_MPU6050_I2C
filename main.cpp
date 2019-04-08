@@ -6,6 +6,7 @@
  * --------------------------------------------------------------------------------------------
  * This main demonstrates how the program operates and how to create/use the MPU6050 class.
  * --------------------------------------------------------------------------------------------
+ */
 
 #include <iostream>
 #include "MPU6050.h"
