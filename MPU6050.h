@@ -8,6 +8,8 @@
  * MPU6050 IMU. The registers are based off the addresses found at invensense:
  * https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf. This is
  * based on the Pi2c library from https://github.com/JohnnySheppard/Pi2c.
+ * Additional I2C documentation was found at
+ * https://www.kernel.org/doc/Documentation/i2c/dev-interface.
  * --------------------------------------------------------------------------------------------
  */
 
@@ -15,12 +17,20 @@
 
 // Used for the I2C interface
 #include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>    // For O_RDWR
-#include <unistd.h>   // For open()
+#include <sys/ioctl.h>     // For ioctl()
+#include <fcntl.h>         // For O_RDWR
+#include <unistd.h>        // For open()
 
 #ifndef MPU6050_H
 #define MPU6050_H
+
+// Exit codes
+#define CLEAN_EXIT             0
+#define I2C_BUS_INIT_ERROR     1
+#define I2C_SET_SLAVE_ADDR_ERR 2
+#define I2C_SET_SLAVE_PWR_MODE 3
+#define I2C_SET_GYRO_RES       4
+#define I2C_SET_ACCEL_RES      5
 
 // ---------- Basic Config Parameters ----------
 // Address used to access data
@@ -153,7 +163,7 @@ private:
 	int address;
 
 	// I2C Variables
-	char fileName[11] = "/dev/i2c-1";
+	char fileName[11];
 	int i2cHandle;
 
 	// Function to initialise the MPU6050 - should only be called once
