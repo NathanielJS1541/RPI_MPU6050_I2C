@@ -18,9 +18,6 @@ int main()
     MPU6050 IMU;
     IMU.updateData();
     cout << IMU;
-    IMU.updateData();
-    cout << IMU;
-    IMU.updateData();
-    cout << IMU;
-    return 0;
+    cout << endl << "Current Temperature: " << IMU.getTemp();
+    return CLEAN_EXIT;
 }
