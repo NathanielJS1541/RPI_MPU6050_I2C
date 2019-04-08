@@ -94,7 +94,6 @@ MPU6050& MPU6050::operator=(const MPU6050& M){
 
 // ---------------------------------- Data Access Functions -----------------------------------
 void MPU6050::updateData(){
-    char rawData[2];
     __u8 requestRegister;
     __u32 returnedData;
 
