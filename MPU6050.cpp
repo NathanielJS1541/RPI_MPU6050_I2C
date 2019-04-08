@@ -1,7 +1,7 @@
 /* ============================================================================================
  * MPU6050 Interface Code for Raspberry Pi
  * ============================================================================================
- * Written by Nathaniel Struselis.
+ * Written by Nathaniel Struselis & James Clarke.
  * Last Update: 05/04/2019
  * --------------------------------------------------------------------------------------------
  * This source code declares the functions and defines the functions used to access data on the
