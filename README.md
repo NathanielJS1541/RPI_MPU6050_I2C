@@ -2,9 +2,8 @@
 Library for interfacing an MPU6050 with a Raspberry Pi via I2C using C++. This library is customizable, and contains many of the definitions from https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf already.
 
 ## Dependencies
-* i2c-tools. This can be downloaded as follows:
-```sudo apt-get install i2c-tools```
-For more information see https://git.kernel.org/pub/scm/utils/i2c-tools/i2c-tools.git/.
+* i2c-tools. This can be downloaded as follows: ```sudo apt-get install i2c-tools```
+  For more information see https://git.kernel.org/pub/scm/utils/i2c-tools/i2c-tools.git/.
 
 ## Example Usage
 For example usage see main.cpp. The full list of commands can be found in MPU6050.h, where comments explain all of the functions.
