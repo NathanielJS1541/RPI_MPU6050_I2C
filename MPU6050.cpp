@@ -29,12 +29,12 @@ MPU6050::MPU6050(){
     // If the address for the device is not specified, use the default address.
     address = MPU_DEFAULT_I2C_ADDR;
 
-    snprintf(fileName, 10, "/dev/i2c-%d", 1); // The I2C interface is 1 unless it is a rev0 Pi
+    snprintf(fileName, 11, "/dev/i2c-%d", 1); // The I2C interface is 1 unless it is a rev0 Pi
 
     // Initialise the I2C interface
     i2cHandle = open(fileName, O_RDWR);
     if (i2cHandle < 0) {
-        std::cout << std::endl << "Couldn't open the I2C Bus. Please ensure the I2C interface is enabled." << std::endl;
+        std::cout << std::endl << "Couldn't open the I2C Bus. Please ensure the I2C interface is enabled and that the correct Pi rev version is selected" << std::endl;
         exit(I2C_BUS_INIT_ERROR);
     }
 
@@ -62,10 +62,10 @@ MPU6050::MPU6050(bool isPiRev0){
     address = MPU_DEFAULT_I2C_ADDR;
 
     if(isPiRev0){
-        snprintf(fileName, 10, "/dev/i2c-%d", 0); // The I2C interface is 0 on a rev0 Pi
+        snprintf(fileName, 11, "/dev/i2c-%d", 0); // The I2C interface is 0 on a rev0 Pi
     }
     else{
-        snprintf(fileName, 10, "/dev/i2c-%d", 1); // The I2C device is 1 otherwise
+        snprintf(fileName, 11, "/dev/i2c-%d", 1); // The I2C device is 1 otherwise
     }
 
     // Initialise the I2C interface
