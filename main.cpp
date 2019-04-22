@@ -18,9 +18,8 @@ int main()
     MPU6050 IMU;      // Create the MPU6050 object
     IMU.updateData(); // Get data from the IMU
     cout << IMU;      // Display all of the data about this object
-    for(int i=0; i<100; i++) {
-        IMU.updateData(); // Get data from the IMU to refresh it
-        cout << IMU;
-    }
+    IMU.updateData(); // Get data from the IMU to refresh it
+    cout << IMU;      // Display the refreshed data
+
     return CLEAN_EXIT;
 }

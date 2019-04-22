@@ -164,15 +164,15 @@ MPU6050& MPU6050::operator=(const MPU6050& M){
 
 // ---------------------------------- Data Access Functions -----------------------------------
 void MPU6050::updateData(){
-    __u8 requestRegister;
     bool readError = false;
     int16_t rawData;
 
     // ------------ Get Gyro Data ------------
     // X Axis
 	rawData = read16BitRegister(MPU_GYRO_X1, MPU_GYRO_X2, readError);
-    if(rawData){
+    if(readError){
         std::cout << std::endl << "Error accessing Gyro X axis data." << std::endl;
+        gyroX = 0;
     }
     else{
         gyroX = float(rawData)/gyroScale;
@@ -180,8 +180,9 @@ void MPU6050::updateData(){
 
     // Y Axis
     rawData = read16BitRegister(MPU_GYRO_Y1, MPU_GYRO_Y2, readError);
-    if(rawData){
+    if(readError){
         std::cout << std::endl << "Error accessing Gyro Y axis data." << std::endl;
+        gyroY = 0;
     }
     else{
         gyroY = float(rawData)/gyroScale;
@@ -189,8 +190,9 @@ void MPU6050::updateData(){
 
     // Z Axis
     rawData = read16BitRegister(MPU_GYRO_Z1, MPU_GYRO_Z2, readError);
-    if(rawData){
+    if(readError){
         std::cout << std::endl << "Error accessing Gyro Z axis data." << std::endl;
+        gyroZ = 0;
     }
     else{
         gyroZ = float(rawData)/gyroScale;
@@ -202,6 +204,7 @@ void MPU6050::updateData(){
     rawData = read16BitRegister(MPU_ACC_X1, MPU_ACC_X2, readError);
     if(readError){
         std::cout << std::endl << "Error accessing Accel X axis data." << std::endl;
+        accelX = 0;
     }
     else{
         accelX = float(rawData)/accelScale;
@@ -210,6 +213,7 @@ void MPU6050::updateData(){
     rawData = read16BitRegister(MPU_ACC_Y1, MPU_ACC_Y2, readError);
     if(readError){
         std::cout << std::endl << "Error accessing Accel Y axis data." << std::endl;
+        accelY = 0;
     }
     else{
         accelY = float(rawData)/accelScale;
@@ -218,6 +222,7 @@ void MPU6050::updateData(){
     rawData = read16BitRegister(MPU_ACC_Z1, MPU_ACC_Z2, readError);
     if(readError){
         std::cout << std::endl << "Error accessing Accel Z axis data." << std::endl;
+        accelZ = 0;
     }
     else{
         accelZ = float(rawData)/accelScale;
@@ -228,6 +233,7 @@ void MPU6050::updateData(){
     rawData = read16BitRegister(MPU_TEMP1, MPU_TEMP2, readError);
     if(readError){
         std::cout << std::endl << "Error accessing Temperature data." << std::endl;
+        temperature = 0;
     }
     else{
         temperature = float(rawData)/320 + 36.53; // Convert temperature to Celcius
@@ -321,12 +327,16 @@ int16_t MPU6050::read16BitRegister(__u8 MSBRegister, __u8 LSBRegister, bool &rea
 std::ostream& operator<<(std::ostream& out, MPU6050& M){
     out << std::endl;
     out << "-------------------------------------" << std::endl;
-    out << "Gyro Values:" << std::endl;
+    out << "----- Basic Info -----" << std::endl;
+    out << "I2C Address: " << M.address << std::endl;
+    out << "I2C Interface: " << M.fileName << std::endl;
+    out << std::endl;
+    out << "---- Gyro Values -----" << std::endl;
     out << "GyroX: " << M.gyroX << std::endl;
     out << "GyroY: " << M.gyroY << std::endl;
     out << "GyroZ: " << M.gyroZ << std::endl;
     out << std::endl;
-    out << "Accel Values:" << std::endl;
+    out << "---- Accel Values ----" << std::endl;
     out << "AccelX: " << M.accelX << std::endl;
     out << "AccelY: " << M.accelY << std::endl;
     out << "AccelZ: " << M.accelZ << std::endl;
