@@ -23,14 +23,6 @@
 #include <fcntl.h>         // For O_RDWR
 #include <unistd.h>        // For open()
 
-// ----------------------- Union to combine bytes into ints and floats ------------------------
-union byteSplitter{
-    float f;
-    int i;
-    char b[4];
-}byteSplitter;
-// --------------------------------------------------------------------------------------------
-
 // ----------------------------- Special class member definitions -----------------------------
 // Default constructor
 MPU6050::MPU6050(){
@@ -173,82 +165,72 @@ MPU6050& MPU6050::operator=(const MPU6050& M){
 // ---------------------------------- Data Access Functions -----------------------------------
 void MPU6050::updateData(){
     __u8 requestRegister;
-    __u32 returnedData = 0;
-    __u32 MSB = 0;
-    __u32 LSB = 0;
-    int16_t twosComplement;
+    bool readError = false;
+    int16_t rawData;
 
     // ------------ Get Gyro Data ------------
     // X Axis
-    requestRegister = MPU_GYRO_X1;
-    returnedData = i2c_smbus_read_word_data(i2cHandle, requestRegister);
-    if(returnedData < 0){
+	rawData = read16BitRegister(MPU_GYRO_X1, MPU_GYRO_X2, readError);
+    if(rawData){
         std::cout << std::endl << "Error accessing Gyro X axis data." << std::endl;
     }
     else{
-        gyroX = float(returnedData)/gyroScale;
+        gyroX = float(rawData)/gyroScale;
     }
 
     // Y Axis
-    requestRegister = MPU_GYRO_Y1;
-    returnedData = i2c_smbus_read_word_data(i2cHandle, requestRegister);
-    if(returnedData < 0){
+    rawData = read16BitRegister(MPU_GYRO_Y1, MPU_GYRO_Y2, readError);
+    if(rawData){
         std::cout << std::endl << "Error accessing Gyro Y axis data." << std::endl;
     }
     else{
-        gyroY = float(returnedData)/gyroScale;
+        gyroY = float(rawData)/gyroScale;
     }
 
     // Z Axis
-    requestRegister = MPU_GYRO_Z1;
-    returnedData = i2c_smbus_read_word_data(i2cHandle, requestRegister);
-    if(returnedData < 0){
+    rawData = read16BitRegister(MPU_GYRO_Z1, MPU_GYRO_Z2, readError);
+    if(rawData){
         std::cout << std::endl << "Error accessing Gyro Z axis data." << std::endl;
     }
     else{
-        gyroZ = float(returnedData)/gyroScale;
+        gyroZ = float(rawData)/gyroScale;
     }
     // ---------------------------------------
 
     // ------- Get Accelerometer Data --------
     // X Axis
-//    requestRegister = MPU_ACC_X1;
-//    MSB = i2c_smbus_read_word_data(i2cHandle, requestRegister);
-//    requestRegister = MPU_ACC_X2;
-//    LSB = i2c_smbus_read_word_data(i2cHandle, requestRegister);
-//    twosComplement = MSB << 8 | LSB;
-    twosComplement = read16BitRegister(MPU_ACC_X1, MPU_ACC_X2);
-    if(MSB < 0||LSB < 0){
+    rawData = read16BitRegister(MPU_ACC_X1, MPU_ACC_X2, readError);
+    if(readError){
         std::cout << std::endl << "Error accessing Accel X axis data." << std::endl;
     }
     else{
-        accelX = float(twosComplement)/accelScale;
+        accelX = float(rawData)/accelScale;
     }
     // Y Axis
-    twosComplement = read16BitRegister(MPU_ACC_Y1, MPU_ACC_Y2);
-    if(returnedData < 0){
+    rawData = read16BitRegister(MPU_ACC_Y1, MPU_ACC_Y2, readError);
+    if(readError){
         std::cout << std::endl << "Error accessing Accel Y axis data." << std::endl;
     }
     else{
-        accelY = float(twosComplement)/accelScale;
+        accelY = float(rawData)/accelScale;
     }
     // Z Axis
-    twosComplement = read16BitRegister(MPU_ACC_Z1, MPU_ACC_Z2);
-    if(returnedData < 0){
+    rawData = read16BitRegister(MPU_ACC_Z1, MPU_ACC_Z2, readError);
+    if(readError){
         std::cout << std::endl << "Error accessing Accel Z axis data." << std::endl;
     }
     else{
-        accelZ = float(twosComplement)/accelScale;
+        accelZ = float(rawData)/accelScale;
     }
     // ---------------------------------------
 
     // -------- Get Temperature Data ---------
-    twosComplement = read16BitRegister(MPU_TEMP1, MPU_TEMP2);
-    if(returnedData < 0){
+    rawData = read16BitRegister(MPU_TEMP1, MPU_TEMP2, readError);
+    if(readError){
         std::cout << std::endl << "Error accessing Temperature data." << std::endl;
     }
     else{
-        temperature = float(twosComplement)/320 + 36.53; // Convert temperature to Celcius
+        temperature = float(rawData)/320 + 36.53; // Convert temperature to Celcius
     }
     // ---------------------------------------
 }
@@ -319,11 +301,19 @@ void MPU6050::initialise(){
 }
 
 // Function to read to read an entire 16-bit register from the MPU6050
-int16_t MPU6050::read16BitRegister(__u8 MSBRegister, __u8 LSBRegister){
+int16_t MPU6050::read16BitRegister(__u8 MSBRegister, __u8 LSBRegister, bool &readError){
     __u32 MSB, LSB; // Variables to store the returned Most Significant Byte and Least Significant Byte
-    MSB = i2c_smbus_read_word_data(i2cHandle, MSBRegister);
-    LSB = i2c_smbus_read_word_data(i2cHandle, LSBRegister);
-    return int16_t(MSB << 8 | LSB);
+    MSB = i2c_smbus_read_word_data(i2cHandle, MSBRegister); // Read the Most Significant Byte from the register
+    LSB = i2c_smbus_read_word_data(i2cHandle, LSBRegister); // Read the Least Significant Byte from the register
+	if(MSB < 0 || LSB < 0){
+		// If either byte is less than 0, there was a read error
+		readError = true; // Set the error variable to display the error message relevant to which register is being accessed
+		return 0;         // Return 0 - avoid pointless operations when the data is probably junk anyway
+	}
+	else{
+		readError = false; // Make sure the error flag is set to false
+    }
+	return int16_t(MSB << 8 | LSB); // Combine the bytes into a 16-bit signed integer
 }
 // --------------------------------------------------------------------------------------------
 

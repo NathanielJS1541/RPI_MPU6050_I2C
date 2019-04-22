@@ -149,10 +149,6 @@
 
 // ---------------------------------------------
 
-// ---------- Union to combine bytes -----------
-union byteSplitter;
-// ---------------------------------------------
-
 // Declare a class to process and store the data
 class MPU6050{
 public:
@@ -195,7 +191,7 @@ private:
 	void initialise();
 
 	// Function to read an entire 16-bit register from the MPU6050
-	int16_t read16BitRegister(__u8 MSBRegister, __u8 LSBRegister);
+	int16_t read16BitRegister(__u8 MSBRegister, __u8 LSBRegister, bool &readError);
 
 	// Gyroscope values
 	int gyroScale;
