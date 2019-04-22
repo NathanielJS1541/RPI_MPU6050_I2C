@@ -76,21 +76,16 @@ MPU6050::MPU6050(bool isPiRev0){
         exit(I2C_SET_SLAVE_ADDR_ERR);
     }
 
-    gyroX = 0;
-    gyroY = 0;
-    gyroZ = 0;
-    accelX = 0;
-    accelY = 0;
-    accelZ = 0;
-    temperature = 0;
-
     // Set the registers for the MPU
     initialise();
+
+	// Get an initial set of readings
+	updateData();
 }
 
 // Constructor with ability to select a custom address and select if the Pi is rev0
 MPU6050::MPU6050(int deviceAddress, bool isPiRev0){
-    // If the address for the device is not specified, use the default address.
+    // For this constructor the device address MUST be specified, so use that address.
     address = deviceAddress;
 
     if(isPiRev0){
@@ -113,16 +108,11 @@ MPU6050::MPU6050(int deviceAddress, bool isPiRev0){
         exit(I2C_SET_SLAVE_ADDR_ERR);
     }
 
-    gyroX = 0;
-    gyroY = 0;
-    gyroZ = 0;
-    accelX = 0;
-    accelY = 0;
-    accelZ = 0;
-    temperature = 0;
-
     // Set the registers for the MPU
     initialise();
+
+	// Get an initial set of readings
+	updateData();
 }
 
 // Copy constructor
@@ -268,8 +258,7 @@ void MPU6050::initialise(){
     deviceRegister = MPU_PWR_MGMT_1;
     returnedData = i2c_smbus_write_byte_data(i2cHandle, deviceRegister, MPU_PWR_MGMT_CLK_INTERNAL_8MHZ);
     if (returnedData < 0){
-        // Not sure if any data SHOULD be returned yet...
-        std::cout << std::endl << "Data was not returned by the device when setting the power register. Potential connectivity problem?" << std::endl;
+        std::cout << std::endl << "Error when setting the power register. Potential connectivity problem?" << std::endl;
         exit(I2C_SET_SLAVE_PWR_MODE);
     }
 
@@ -277,8 +266,7 @@ void MPU6050::initialise(){
 //    deviceRegister = MPU_INT_ENABLE;
 //    returnedData = i2c_smbus_write_byte_data(i2cHandle, deviceRegister, 1);
 //    if (returnedData < 0){
-//        // Not sure if any data SHOULD be returned yet...
-//        std::cout << std::endl << "Data was not returned by the device when setting up the interrupts. Potential connectivity problem?" << std::endl;
+//        std::cout << std::endl << "Error when setting up the interrupts. Potential connectivity problem?" << std::endl;
 //        exit(I2C_SETUP_INTERRUPTS);
 //    }
 
@@ -287,8 +275,7 @@ void MPU6050::initialise(){
     // Set the sensitivity. Value shifted to the right to correctly position it in the register
     returnedData = i2c_smbus_write_byte_data(i2cHandle, deviceRegister, MPU_GYRO_SENS_500 << 3);
     if (returnedData < 0){
-        // Not sure if any data SHOULD be returned yet...
-        std::cout << std::endl << "Data was not returned by the device when setting up the Gyro. Potential connectivity problem?" << std::endl;
+        std::cout << std::endl << "Error when setting up the Gyro. Potential connectivity problem?" << std::endl;
         exit(I2C_SET_GYRO_RES);
     }
     gyroScale = MPU_GYRO_SCALE_500;
@@ -299,8 +286,7 @@ void MPU6050::initialise(){
     // Set the sensitivity. Value shifted to the right to correctly position it in the register
     returnedData = i2c_smbus_write_byte_data(i2cHandle, deviceRegister, MPU_ACC_SENS_2 << 3);
     if (returnedData < 0){
-        // Not sure if any data SHOULD be returned yet...
-        std::cout << std::endl << "Data was not returned by the device when setting up the Accelerometer. Potential connectivity problem?" << std::endl;
+        std::cout << std::endl << "Error when setting up the Accelerometer. Potential connectivity problem?" << std::endl;
         exit(I2C_SET_ACCEL_RES);
     }
     accelScale = MPU_ACC_SCALE_2;
