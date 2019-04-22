@@ -2,7 +2,7 @@
  * MPU6050 Interface Header for Raspberry Pi
  * ============================================================================================
  * Written by Nathaniel Struselis & James Clarke.
- * Last Update: 05/04/2019
+ * Last Update: 21/04/2019
  * --------------------------------------------------------------------------------------------
  * This header declares the functions and defines the functions used to access data on the
  * MPU6050 IMU. The registers are based off the addresses found at invensense:

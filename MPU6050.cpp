@@ -2,7 +2,7 @@
  * MPU6050 Interface Code for Raspberry Pi
  * ============================================================================================
  * Written by Nathaniel Struselis & James Clarke.
- * Last Update: 05/04/2019
+ * Last Update: 22/04/2019
  * --------------------------------------------------------------------------------------------
  * This source code declares the functions and defines the functions used to access data on the
  * MPU6050 IMU. The registers are based off the addresses found at invensense:
@@ -314,7 +314,7 @@ std::ostream& operator<<(std::ostream& out, MPU6050& M){
     out << std::endl;
     out << "-------------------------------------" << std::endl;
     out << "----- Basic Info -----" << std::endl;
-    out << "I2C Address: " << M.address << std::endl;
+    out << "I2C Address: 0x" << std::hex << M.address << std::dec << std::endl; // This now outputs the address in hex to make it more clear
     out << "I2C Interface: " << M.fileName << std::endl;
     out << std::endl;
     out << "---- Gyro Values -----" << std::endl;
