@@ -19,6 +19,7 @@ int main()
     IMU.updateData(); // Get data from the IMU
     cout << IMU;      // Display all of the data about this object
     IMU.updateData(); // Get data from the IMU to refresh it
-    cout << endl << "Current Temperature: " << IMU.getTemp(); // Print a specific piece of data
+    cout << IMU;      // Display the refreshed data
+
     return CLEAN_EXIT;
 }

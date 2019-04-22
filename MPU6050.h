@@ -31,10 +31,17 @@
 #define I2C_SET_SLAVE_PWR_MODE 3
 #define I2C_SET_GYRO_RES       4
 #define I2C_SET_ACCEL_RES      5
+#define I2C_SETUP_INTERRUPTS   6
 
 // ---------- Basic Config Parameters ----------
 // Address used to access data
 #define MPU_DEFAULT_I2C_ADDR 0x68
+
+// Interrupt enable register
+#define MPU_INT_ENABLE 0x38 // Register as follows: {-, -, -, FIFO_OFLOW_EN, I2C_MST_INT_EN, -, -, DATA_RDY_EN}
+
+// Interrupt status register
+#define MPU_INT_STATUS 0x3A // Register as follows: {-, -, -, FIFO_OFLOW_INT, I2C_MST_INT, -, -, DATA_RDY_INT}
 
 // MPU configuration register
 #define MPU_CONFIG 0x1A // Register as follows: {-, -, EXT_SYNC_SET[3 bits], DLPF_CONFIG[3 bits]}
@@ -66,11 +73,17 @@
 // Gyro configuration register
 #define MPU_GYRO_CONFIG 0x1B // Register as follows: {XG_ST, YG_ST, ZG_ST, FS_SEL[2 bits], -, -, -}
 
-// FS_SEL parameters - Gyro sensitivty parameters
+// FS_SEL parameters - Gyro sensitivity parameters
 #define MPU_GYRO_SENS_250  0 // ± 250 °/s
 #define MPU_GYRO_SENS_500  1 // ± 500 °/s
 #define MPU_GYRO_SENS_1000 2 // ± 1000 °/s
 #define MPU_GYRO_SENS_2000 3 // ± 2000 °/s
+
+// Gyro scaling parameters - based on sensitivity above
+#define MPU_GYRO_SCALE_250  131  // for ± 250 °/s
+#define MPU_GYRO_SCALE_500  65.5 // for ± 500 °/s
+#define MPU_GYRO_SCALE_1000 32.8 // for ± 1000 °/s
+#define MPU_GYRO_SCALE_2000 16.4 // for ± 2000 °/s
 
 // Gyro reading registers - Each register is 8 bits
 #define MPU_GYRO_X1 0x43 // Most significant byte
@@ -90,6 +103,12 @@
 #define MPU_ACC_SENS_4  1 // ±4g
 #define MPU_ACC_SENS_8  2 // ±8g
 #define MPU_ACC_SENS_16 3 // ±16g
+
+// Accelerometer scaling parameters - based on sensitivity above
+#define MPU_ACC_SCALE_2  16384 // for ±2g
+#define MPU_ACC_SCALE_4  8192  // for ±4g
+#define MPU_ACC_SCALE_8  4096  // for ±8g
+#define MPU_ACC_SCALE_16 2048  // for ±16g
 
 // Accelerometer reading registers - Each register is 8 bits
 #define MPU_ACC_X1 0x3B // Most significant byte
@@ -171,12 +190,17 @@ private:
 	// Function to initialise the MPU6050 - should only be called once
 	void initialise();
 
+	// Function to read an entire 16-bit register from the MPU6050
+	int16_t read16BitRegister(__u8 MSBRegister, __u8 LSBRegister, bool &readError);
+
 	// Gyroscope values
+	int gyroScale;
 	float gyroX;
 	float gyroY;
 	float gyroZ;
 
 	// Accelerometer values
+	int accelScale;
 	float accelX;
 	float accelY;
 	float accelZ;
