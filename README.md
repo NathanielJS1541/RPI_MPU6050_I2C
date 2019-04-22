@@ -14,15 +14,15 @@ For example usage see main.cpp. The full list of commands can be found in MPU605
 should only be calling the friend functions and public functions from your code. The private functions are private for a reason so keep them that way!
 
 ### Wiring
-To find the pinout of your pi, go to a terminal and enter ```pinout``` or go to https://pinout.xyz/ and look at the wiring diagram there.   
-______________________________   
-|  MPU6050  |  Raspberrt Pi  |   
-|    VCC    |      3.3 V     |   
-|    GND    |      GND       |   
-|    SCL    |  SCL (GPIO 3)  |   
-|    SDA    |  SDA (GPIO 2)  |   
-|    AD0    |[OPTIONAL] 3.3 V|   
-______________________________   
+To find the pinout of your pi, go to a terminal and enter ```pinout``` or go to https://pinout.xyz/ and look at the wiring diagram there.  
+
+| MPU6050 |   Raspberry Pi  |  
+|:-------:|:---------------:|  
+|   VCC   |       3.3V      |  
+|   GND   |       GND       |  
+|   SCL   |   SCL (GPIO3)   |  
+|   SDA   |   SDA (GPIO2)   |  
+|   AD0   | [OPTIONAL] 3.3V |  
 
 Connecting AD0 to a high signal changes the I2C address from the default ***0x68*** to ***0x69***. It is pulled to ground internally so this connection is
 optional as it is pulled to ground by default. Only connect this pin if you ***need*** to change the I2C address - for example if you are using two of the
