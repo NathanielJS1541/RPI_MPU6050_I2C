@@ -2,7 +2,7 @@
  * MPU6050 Interface Header for Raspberry Pi
  * ============================================================================================
  * Written by Nathaniel Struselis & James Clarke.
- * Last Update: 21/04/2019
+ * Last Update: 23/04/2019
  * --------------------------------------------------------------------------------------------
  * This header declares the functions and defines the functions used to access data on the
  * MPU6050 IMU. The registers are based off the addresses found at invensense:
@@ -32,6 +32,7 @@
 #define I2C_SET_GYRO_RES       4
 #define I2C_SET_ACCEL_RES      5
 #define I2C_SETUP_INTERRUPTS   6
+#define MPU_INIT_PARAM_ERROR   7
 
 // ---------- Basic Config Parameters ----------
 // Address used to access data
@@ -156,6 +157,8 @@ public:
     MPU6050();                                         // Default constructor - used for making arrays of the object
 	MPU6050(bool isPiRev0);                            // Default constructor with compatibility for rev0 Pis
 	MPU6050(int deviceAddress, bool isPiRev0 = false); // Constructor with additional parameters to set the address and if the Pi is rev0
+	// Constructor to allow customization of basic configuration parameters
+	MPU6050(int pwrMgmtMode, int gyroConfig, int accelConfig, int deviceAddress = MPU_DEFAULT_I2C_ADDR, bool isPiRev0 = false);
 	MPU6050(const MPU6050& M);                         // Copy constructor
 	~MPU6050();                                        // Destructor
 	// --------------------------------------------
@@ -187,8 +190,9 @@ private:
 	char fileName[11];
 	int i2cHandle;
 
-	// Function to initialise the MPU6050 - should only be called once
-	void initialise();
+	// Functions to initialise the MPU6050 - should only be called once
+	void defaultInitialise();
+	void initialise(int pwrMgmtMode, int gyroConfig, int accelConfig);
 
 	// Function to read an entire 16-bit register from the MPU6050
 	int16_t read16BitRegister(__u8 MSBRegister, __u8 LSBRegister, bool &readError);

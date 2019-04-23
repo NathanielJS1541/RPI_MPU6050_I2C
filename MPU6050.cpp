@@ -2,7 +2,7 @@
  * MPU6050 Interface Code for Raspberry Pi
  * ============================================================================================
  * Written by Nathaniel Struselis & James Clarke.
- * Last Update: 22/04/2019
+ * Last Update: 23/04/2019
  * --------------------------------------------------------------------------------------------
  * This source code declares the functions and defines the functions used to access data on the
  * MPU6050 IMU. The registers are based off the addresses found at invensense:
@@ -29,6 +29,7 @@ MPU6050::MPU6050(){
     // If the address for the device is not specified, use the default address.
     address = MPU_DEFAULT_I2C_ADDR;
 
+	// Get the user-space I2C interface
     snprintf(fileName, 11, "/dev/i2c-%d", 1); // The I2C interface is 1 unless it is a rev0 Pi
 
     // Initialise the I2C interface
@@ -45,7 +46,7 @@ MPU6050::MPU6050(){
 	}
 
     // Set the registers for the MPU
-    initialise();
+    defaultInitialise();
 
 	// Get an initial set of readings
 	updateData();
@@ -56,6 +57,7 @@ MPU6050::MPU6050(bool isPiRev0){
     // If the address for the device is not specified, use the default address.
     address = MPU_DEFAULT_I2C_ADDR;
 
+	// Get the user-space I2C interface
     if(isPiRev0){
         snprintf(fileName, 11, "/dev/i2c-%d", 0); // The I2C interface is 0 on a rev0 Pi
     }
@@ -77,7 +79,7 @@ MPU6050::MPU6050(bool isPiRev0){
     }
 
     // Set the registers for the MPU
-    initialise();
+    defaultInitialise();
 
 	// Get an initial set of readings
 	updateData();
@@ -86,6 +88,39 @@ MPU6050::MPU6050(bool isPiRev0){
 // Constructor with ability to select a custom address and select if the Pi is rev0
 MPU6050::MPU6050(int deviceAddress, bool isPiRev0){
     // For this constructor the device address MUST be specified, so use that address.
+    address = deviceAddress;
+
+	// Get the user-space I2C interface
+    if(isPiRev0){
+        snprintf(fileName, 10, "/dev/i2c-%d", 0); // The I2C interface is 0 on a rev0 Pi
+    }
+    else{
+        snprintf(fileName, 10, "/dev/i2c-%d", 1); // The I2C device is 1 otherwise
+    }
+
+    // Initialise the I2C interface
+    i2cHandle = open(fileName, O_RDWR);
+    if (i2cHandle < 0) {
+        std::cout << std::endl << "Couldn't open the I2C Bus. Please ensure the I2C interface is enabled." << std::endl;
+        exit(I2C_BUS_INIT_ERROR);
+    }
+
+    // Set the slave address for the device
+    if (ioctl(i2cHandle, I2C_SLAVE, address) < 0) {
+        std::cout << std::endl << "The I2C Device couldn't be assigned a slave address." << std::endl;
+        exit(I2C_SET_SLAVE_ADDR_ERR);
+    }
+
+    // Set the registers for the MPU
+    defaultInitialise();
+
+	// Get an initial set of readings
+	updateData();
+}
+
+// Constructor to allow adjustment of power management, gyro and accel sensitivities, device I2C address, and whether the Pi is rev 0
+MPU6050::MPU6050(int pwrMgmtMode, int gyroConfig, int accelConfig, int deviceAddress = MPU_DEFAULT_I2C_ADDR, bool isPiRev0 = false){
+	// Set the device's I2C address
     address = deviceAddress;
 
     if(isPiRev0){
@@ -108,8 +143,8 @@ MPU6050::MPU6050(int deviceAddress, bool isPiRev0){
         exit(I2C_SET_SLAVE_ADDR_ERR);
     }
 
-    // Set the registers for the MPU
-    initialise();
+    // Set the registers for the MPU with user-defined parameters
+    initialise(pwrMgmtMode, gyroConfig, accelConfig);
 
 	// Get an initial set of readings
 	updateData();
@@ -249,8 +284,8 @@ float MPU6050::getTemp(){return temperature;}
 // --------------------------------------------------------------------------------------------
 
 // --------------------------------- Private Class Functions ----------------------------------
-// Function to initialize the MPU6050
-void MPU6050::initialise(){
+// Default function to initialize the MPU6050
+void MPU6050::defaultInitialise(){
     __u8 deviceRegister; // The device register to access
     __s32 returnedData;  // The data returned by the device
 
@@ -290,6 +325,55 @@ void MPU6050::initialise(){
         exit(I2C_SET_ACCEL_RES);
     }
     accelScale = MPU_ACC_SCALE_2;
+}
+
+// Initialiser function to allow custom configuration of power management and gyro and accel configs
+void MPU6050::initialise(int pwrMgmtMode, int gyroConfig, int accelConfig){
+	__u8 deviceRegister; // The device register to access
+    __s32 returnedData;  // The data returned by the device
+
+	// Data Validation
+	if(pwrMgmtMode < MPU_PWR_MGMT_CLK_INTERNAL_8MHZ || pwrMgmtMode > MPU_PWR_MGMT_CLK_STOP){
+		std::cout << std::endl << "Initialise function received an invalid power management parameter" << std::endl;
+		exit(MPU_INIT_PARAM_ERROR);
+	}
+	if(gyroConfig < MPU_GYRO_SENS_250 || gyroConfig > MPU_GYRO_SENS_2000){
+		std::cout << std::endl << "Initialise function received an invalid gyro configuration parameter" << std::endl;
+		exit(MPU_INIT_PARAM_ERROR);
+	}
+	if(accelConfig < MPU_ACC_SENS_2 || accelConfig > MPU_ACC_SENS_16){
+		std::cout << std::endl << "Initialise function received an invalid accel configuration parameter" << std::endl;
+		exit(MPU_INIT_PARAM_ERROR);
+	}
+
+    // Configure the MPU Power Mode
+    deviceRegister = MPU_PWR_MGMT_1;
+    returnedData = i2c_smbus_write_byte_data(i2cHandle, deviceRegister, pwrMgmtMode);
+    if (returnedData < 0){
+        std::cout << std::endl << "Error when setting the power register. Potential connectivity problem?" << std::endl;
+        exit(I2C_SET_SLAVE_PWR_MODE);
+    }
+
+    // Configure the Gyroscope
+    deviceRegister = MPU_GYRO_CONFIG;
+    // Set the sensitivity. Value shifted to the right to correctly position it in the register
+    returnedData = i2c_smbus_write_byte_data(i2cHandle, deviceRegister, gyroConfig << 3);
+    if (returnedData < 0){
+        std::cout << std::endl << "Error when setting up the Gyro. Potential connectivity problem?" << std::endl;
+        exit(I2C_SET_GYRO_RES);
+    }
+    gyroScale = gyroConfig;
+
+
+    // Configure the Accelerometer
+    deviceRegister = MPU_ACC_CONFIG;
+    // Set the sensitivity. Value shifted to the right to correctly position it in the register
+    returnedData = i2c_smbus_write_byte_data(i2cHandle, deviceRegister, accelConfig << 3);
+    if (returnedData < 0){
+        std::cout << std::endl << "Error when setting up the Accelerometer. Potential connectivity problem?" << std::endl;
+        exit(I2C_SET_ACCEL_RES);
+    }
+    accelScale = accelConfig;
 }
 
 // Function to read to read an entire 16-bit register from the MPU6050
