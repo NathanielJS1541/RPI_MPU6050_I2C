@@ -43,7 +43,7 @@ of your Pi. Either connect VCC of the MPU6050 to 3.3V, or use a Bi-directional l
   having issues, open the terminal and enter ```i2cdetect -y 1``` (or ```i2cdetect -y 0``` on a revision 0 Pi) and it should allow you to find the I2C address of
   the sensor. If the output table is blank, there is a communication issue between the two devices. All codes on the output table are in HEX, so to specify this
   in C++ simply add ***0x*** to the front of whichever number you see. More detail about i2cdetect can be found under the troubleshooting section.
-* ```MPU6050 IMU(int pwrMgmtMode, int gyroConfig, int accelConfig, int deviceAddress, bool isPiRev0);``` Changes the MPU_PWR_MGMT_1 register to the values specified
+* ```MPU6050 IMU(int pwrMgmtMode, int gyroConfig, int accelConfig, int deviceAddress, bool isPiRev0);``` Changes the ***MPU_PWR_MGMT_1*** register to the values specified
   by the pwrMgmtMode, gyroConfig and accelConfig parameters. These should not be directly entered as integers, but the definitions from MPU6050.h should instead
   be used to make error checking easier and to reduce the possibility of errors. A lot of effort was put into transferring the confoguration definitions from the
   datasheet so use them! The deviceAddress and isPiRev0 parameters can also be set but are optional. The deviceAddress defaults to ***0x68*** and isPiRev0 defaults
