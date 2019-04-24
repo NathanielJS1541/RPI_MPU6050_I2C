@@ -2,7 +2,7 @@
  * MPU6050 Interface for Raspberry Pi - Example Code
  * ============================================================================================
  * Written by Nathaniel Struselis & James Clarke.
- * Last Update: 21/04/2019
+ * Last Update: 24/04/2019
  * --------------------------------------------------------------------------------------------
  * This main demonstrates how the program operates and how to create/use the MPU6050 class.
  * --------------------------------------------------------------------------------------------
@@ -20,6 +20,13 @@ int main()
     cout << IMU;      // Display all of the data about this object
     IMU.updateData(); // Get data from the IMU to refresh it
     cout << IMU;      // Display the refreshed data
+
+    // Example using constructor with more configurable parameters
+    MPU6050 customIMU(MPU_PWR_MGMT_CLK_INTERNAL_8MHZ, MPU_GYRO_SENS_2000, MPU_ACC_SENS_16, MPU_DEFAULT_I2C_ADDR, false);
+    customIMU.updateData(); // Update the new IMU
+    cout << customIMU;      // Print the data
+    customIMU.updateData(); // Update the new IMU
+    cout << customIMU;      // Print the data
 
     return CLEAN_EXIT;
 }

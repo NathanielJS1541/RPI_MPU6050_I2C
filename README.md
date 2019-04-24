@@ -79,6 +79,9 @@ This section details steps you can take to try and solve errors when using this 
 * ***Exit Code 6*** - _Error when setting up the interrupts. Potential connectivity problem?_ This is very similar to Exit Code 2, however the interrupts are no
   longer set. If you are getting this error you may be using an older version of the library. It suggests there is a communication error between the two devices,
   or that the register is not able to be modified. Try using i2cdetect as for Exit Code 2.
+* ***Exit Code 7*** - _Generic error when parsing inizialization parameters to the constructor._ The parameters that may cause this error are: ***pwrMgmtMode***,
+  ***gyroConfig***, and ***accelConfig***. Please check that the parameter you are parsing the constructor is one available within the MPU6050 datasheet or within
+  the MPU6050.h definitions. To prevent errors, it is recommended to use these definitions rather than entering a plain number as it will prevent these errors.
 * ***Last Resort:*** As a last resort please open an issue on the GitHub page (at https://github.com/NathanielJS1541/RPI_MPU6050_I2C/issues). Note that this is
   the ***preferred*** way to contact us, but requires a GutHub account. If yo do not have a GitHub account, please send an Email to one of us (Emails can be found
   on GitHub Profiles). If you are sending an Email, please include the Repsoitory name in the subject. And in both cases be as specific as possible about your
