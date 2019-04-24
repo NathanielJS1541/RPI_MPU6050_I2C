@@ -198,13 +198,13 @@ private:
 	int16_t read16BitRegister(__u8 MSBRegister, __u8 LSBRegister, bool &readError);
 
 	// Gyroscope values
-	int gyroScale;
+	float gyroScale;
 	float gyroX;
 	float gyroY;
 	float gyroZ;
 
 	// Accelerometer values
-	int accelScale;
+	float accelScale;
 	float accelX;
 	float accelY;
 	float accelZ;
