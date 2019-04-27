@@ -33,19 +33,23 @@ of your Pi. Either connect VCC of the MPU6050 to 3.3V, or use a Bi-directional l
 
 ### Basic Function List
 * ```MPU6050 IMU;``` Creates an MPU6050 object called IMU. Defaults isRev0 to false. Defaults the I2C address to be accessed to ***0x68***.
-* ```MPU6050 IMU(true);``` Creates an MPU6050 object called IMU using the interface for a revision 0 Pi. This is important as the user-mode I2C interface was
-  renamed in later revisions. To find if you need to do this, enter ```ls /dev/*i2c*``` into the command line. If the Pi returns ```/dev/i2c-1``` your Pi is not
-  revision 0. If your Pi returns ```/dev/i2c-0```, your Pi is revision 0 and the isRev0 option ***must be set to true!***
-* ```MPU6050 IMU(0x69, [true]);``` Changes the I2C address that is to be accessed from ***0x68*** to ***0x69***. The ```true``` part is, as above, only required
-  if your Pi is revision 0. It will default to false so you can simply enter ```MPU6050 IMU(0x69);``` if you are on a Pi that is above revision 0. Any address can
-  be specified here, but as far as I am aware the MPU6050 module defaults to ***0x68*** unless you connect the AD0 pin on the MPU6050 to a ***high*** signal, at
-  which point it changes the I2C address to ***0x69***. I believe AD0 is pulled down by default, so it is not necessary to connect to ground in order to keep
-  the default I2C address. If you are having issues, open the terminal and enter ```i2cdetect -y 1``` (or ```i2cdetect -y 0``` on a revision 0 Pi) and it should
-  allow you to find the I2C address of the sensor. If the output table is blank, there is a communication issue between the two devices. All codes on the output
-  table are in HEX, so to specify this in C++ simply add ***0x*** to the front of whichever number you see. More detail about i2cdetect can be found under
-  the troubleshooting section.
+* ```MPU6050 IMU(bool isPiRev0);``` Creates an MPU6050 object called IMU using the interface for a revision 0 Pi if isPiRev0 is set to true. This is important as
+  the user-mode I2C interface was renamed in later revisions. To find if you need to do this, enter ```ls /dev/*i2c*``` into the command line. If the Pi returns
+  ```/dev/i2c-1``` your Pi is not revision 0. If your Pi returns ```/dev/i2c-0```, your Pi is revision 0 and the isRev0 option ***must be set to true!***
+* ```MPU6050 IMU(int deviceAddress, bool isPiRev0);``` Changes the I2C address that is to be accessed. Default value is ***0x68***, but this can be changed to
+  ***0x69*** if AD0 is pulled high. The ```isPiRev0``` part is, as above, only required to be true if your Pi is revision 0. It will default to false so you can
+  simply enter ```MPU6050 IMU(0x69);``` if you are on a Pi that is above revision 0. Any address can be specified here, but as far as I am aware the MPU6050 module
+  defaults to ***0x68*** unless you connect the AD0 pin on the MPU6050 to a ***high*** signal, at which point it changes the I2C address to ***0x69***. If you are
+  having issues, open the terminal and enter ```i2cdetect -y 1``` (or ```i2cdetect -y 0``` on a revision 0 Pi) and it should allow you to find the I2C address of
+  the sensor. If the output table is blank, there is a communication issue between the two devices. All codes on the output table are in HEX, so to specify this
+  in C++ simply add ***0x*** to the front of whichever number you see. More detail about i2cdetect can be found under the troubleshooting section.
+* ```MPU6050 IMU(int pwrMgmtMode, int gyroConfig, int accelConfig, int deviceAddress, bool isPiRev0);``` Changes the ***MPU_PWR_MGMT_1*** register to the values specified
+  by the pwrMgmtMode, gyroConfig and accelConfig parameters. These should not be directly entered as integers, but the definitions from MPU6050.h should instead
+  be used to make error checking easier and to reduce the possibility of errors. A lot of effort was put into transferring the confoguration definitions from the
+  datasheet so use them! The deviceAddress and isPiRev0 parameters can also be set but are optional. The deviceAddress defaults to ***0x68*** and isPiRev0 defaults
+  to ***false***.
 * ```IMU.updateData();``` Fetches data from the I2C device and stores it within the IMU object.
-* ```IMU.get[GyroX]();``` Replace the part in brackets with the parameter you want to return. Returns the float value of that parameter stored within the IMU
+* ```IMU.getPARAMETER();``` Replace the ***PARAMETER*** in with the parameter you want to return. Returns the float value of that parameter stored within the IMU
   object. Available parameters are: ***GyroX***, ***GyroY***, ***GyroZ***, ***AccelX***, ***AccelY***, ***AccelZ***, ***Temp***.
 * ```std::cout << IMU;``` Displays data about the IMU object in a block of text.
 
