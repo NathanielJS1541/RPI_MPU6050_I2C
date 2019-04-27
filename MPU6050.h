@@ -167,6 +167,18 @@ public:
 	MPU6050& operator=(const MPU6050& M); // Assignment operator
 	// --------------------------------------------
 
+	// ------ MPU Configuration Functions ---------
+	void reconfigure(int pwrMgmtMode, int gyroConfig = MPU_GYRO_SENS_500, int accelConfig = MPU_ACC_SENS_2);
+	void sleep();
+	void wake();
+	void disableTemp();
+	void enableTemp();
+	void disableGyro();
+	void enableGyro();
+	void disableAccel();
+	void enableAccel();
+    // --------------------------------------------
+
 	// ---------- Data Access Functions -----------
 	void updateData();
 	float getGyroX();

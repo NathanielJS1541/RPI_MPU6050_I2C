@@ -187,6 +187,13 @@ MPU6050& MPU6050::operator=(const MPU6050& M){
 }
 // --------------------------------------------------------------------------------------------
 
+// ------------------------------- MPU Configuration Functions --------------------------------
+// Reconfigure the power management 1 register, gyro config register and accel config register
+void MPU6050::reconfigure(int pwrMgmtMode, int gyroConfig, int accelConfig){
+    initialise(pwrMgmtMode, gyroConfig, accelConfig);
+}
+// --------------------------------------------------------------------------------------------
+
 // ---------------------------------- Data Access Functions -----------------------------------
 void MPU6050::updateData(){
     bool readError = false;
