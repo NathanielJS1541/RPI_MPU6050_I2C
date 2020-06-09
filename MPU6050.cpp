@@ -14,7 +14,6 @@
  */
 
 #include "MPU6050.h" // Include definitions and declarations within the header file
-
 #include <iostream>  // Used for data output
 
 // Used for the I2C interface

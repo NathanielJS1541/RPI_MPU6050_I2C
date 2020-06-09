@@ -22,7 +22,7 @@ int main()
     cout << IMU;      // Display the refreshed data
 
     // Example using constructor with more configurable parameters
-    MPU6050 customIMU(MPU_PWR_MGMT_CLK_INTERNAL_8MHZ, MPU_GYRO_SENS_2000, MPU_ACC_SENS_16, MPU_DEFAULT_I2C_ADDR, false);
+    MPU6050 customIMU(MPU_PWR_MGMT_CLK_INTERNAL_8MHZ, MPU_GYRO_SENS_250, MPU_ACC_SENS_2, MPU_DEFAULT_I2C_ADDR, false);
     customIMU.updateData(); // Update the new IMU
     cout << customIMU;      // Print the data
     customIMU.updateData(); // Update the new IMU
