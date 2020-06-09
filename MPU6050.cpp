@@ -14,7 +14,6 @@
  */
 
 #include "MPU6050.h" // Include definitions and declarations within the header file
-
 #include <iostream>  // Used for data output
 
 // Used for the I2C interface
@@ -184,6 +183,13 @@ MPU6050& MPU6050::operator=(const MPU6050& M){
     temperature = M.temperature;
 
     return *this;
+}
+// --------------------------------------------------------------------------------------------
+
+// ------------------------------- MPU Configuration Functions --------------------------------
+// Reconfigure the power management 1 register, gyro config register and accel config register
+void MPU6050::reconfigure(int pwrMgmtMode, int gyroConfig, int accelConfig){
+    initialise(pwrMgmtMode, gyroConfig, accelConfig);
 }
 // --------------------------------------------------------------------------------------------
 
