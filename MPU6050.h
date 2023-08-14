@@ -59,7 +59,7 @@
 
 // DLPF_CONFIG parameters - for more information see the datasheet
                             // |        Accelerometer        |                Gyroscope               |
-							// |  Bandwidth/Hz  |  Delay/ms  |  Bandwidth/Hz  |  Delay/ms  |  Fs/kHz  |
+                            // |  Bandwidth/Hz  |  Delay/ms  |  Bandwidth/Hz  |  Delay/ms  |  Fs/kHz  |
 #define MPU_CONFIG_DLPF_0 0 // |      260       |     0.0    |      256       |     0.98   |     8    |
 #define MPU_CONFIG_DLPF_1 1 // |      184       |     2.0    |      188       |     1.9    |     1    |
 #define MPU_CONFIG_DLPF_2 2 // |       94       |     3.0    |       98       |     2.8    |     1    |
